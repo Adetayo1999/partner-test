@@ -19,7 +19,7 @@ export const DashboardCard = ({ metric, title, link, subText }: DashboardCardPro
           <div className="flex justify-between ">
             <div className="">
                 <p className="text-[#797D8C] text-sm font-medium mb-2">{title}</p>
-                <h1 className="text-[#04103B] text-2xl font-bold ">{NumberFormatter(metric)}{metric > 1000 ? "K" : ""} </h1>
+                <h1 className="text-[#04103B] text-2xl font-bold ">{NumberFormatter(metric)}</h1>
             </div>
             <div className="">
                 <CardReveiveIcon />

@@ -1,3 +1,4 @@
+import { PageLoader } from '@common/components/loader/page-loader';
 import { AuthLayout } from '@modules/auth/components/layout';
 import { ProtectedLayout } from '@modules/dashboard/components/layout';
 import { Suspense } from 'react';
@@ -22,7 +23,7 @@ export const generateRoute = ({
 			<Route
 				path={path}
 				element={
-					<Suspense fallback={ <p>Loading..</p> }>
+					<Suspense fallback={ <PageLoader /> }>
 						<Component />
 					</Suspense>
 				}

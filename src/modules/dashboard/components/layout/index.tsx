@@ -3,7 +3,7 @@ import { Button } from "@common/components/forms/button";
 import { Container } from "@common/components/skeleton/container"
 import { Tabs } from "@common/components/tabs";
 import { PATHS } from "@common/routes/paths";
-import { Outlet } from "react-router-dom";
+import { Outlet, Link } from "react-router-dom";
 
 
 const TABS = [
@@ -35,7 +35,9 @@ export const ProtectedLayout = () => {
             <div className="py-6">
                 <div className="flex justify-between items-center mb-[2rem]">
                     <div className="">
+                        <Link to={PATHS.protected.home} >
                         <img src={fuspayLogo} className="w-[7rem]" alt="Fuspay" />
+                        </Link>
                     </div>
                     <div className="">
                         <Button size="sm" variant="danger" >Logout</Button>

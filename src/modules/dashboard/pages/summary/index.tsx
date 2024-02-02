@@ -38,14 +38,14 @@ const MOCK_DATA = [
         id: 1,
         title: "Total Order",
         subText: "10,234 txns",
-        metric: 43500
+        metric: 4350000000
     },
     {
         id: 2,
         title: "Pending Txn",
         subText: "1,234 txns",
         metric: 61435.67,
-        link: PATHS.protected.home
+        link: PATHS.protected.transactions + "?type=pending"
     },
     {
         id: 3,
