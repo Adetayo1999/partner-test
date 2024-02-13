@@ -12,7 +12,8 @@ export const Tabs = ({ tabs }: TabsProps) => {
          {
               tabs.map((item) => (
                 <li key={item.id} className="mr-2 min-w-[9.813rem]">
-                    <NavLink  to={item.path} className={({ isActive }) => `w-full inline-block p-3  border-b-2  rounded-t-lg text-sm font-bold ${isActive  ? 'text-[#000] border-[#000]' : 'text-[#797D8C] border-transparent'} `} >
+                    <NavLink  to={item.path} 
+                    className={({ isActive }) => `w-full inline-block p-3  border-b-2  rounded-t-lg text-sm font-bold ${isActive  ? 'text-[#000] border-[#000]' : 'text-[#797D8C] border-transparent'} `} >
                     {item.title}
                 </NavLink>
                 </li>
