@@ -15,6 +15,21 @@ function ResolutionCenter() {
 
         <form action="">
           <div className="flex  items-end gap-x-5 w-full">
+            <div className="flex-[0.2]">
+              <Dropdown
+                options={[
+                  {
+                    label: "Payout",
+                    value: "payout",
+                  },
+                  {
+                    label: "Collection",
+                    value: "collection",
+                  },
+                ]}
+                className=""
+              />
+            </div>
             <div className="flex-[0.4]">
               <Input labelText="Order Number" className="" />
             </div>

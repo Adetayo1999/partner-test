@@ -1,70 +1,51 @@
 import { Modal } from "@common/components/modal";
 import { currencyFormatter } from "@common/helpers/current-formatter";
-import { TRANSACTION_STATUS, getStatus } from "@common/helpers/tx-status";
 import { FaCheck } from "react-icons/fa";
-import { LiaTimesSolid } from "react-icons/lia";
 import { HeadingComponent } from "../common/heading-component";
 import { CopyButton } from "../common/copy-button";
 import { TitleComponent } from "../common/title-component";
+import { PAYOUT_STATUS } from "@common/helpers/payout-status";
 
-interface TransactionModalProps {
+interface PayoutModalProps {
   title: string;
   closeModal: () => void;
 }
 
-interface TransactionModalSectionProps {
+interface PayoutModalSectionProps {
   accessor: string;
   data: typeof MOCK_DATA;
 }
 
-const styles: { [key in TRANSACTION_STATUS]: string } = {
-  pending: "bg-[#FFD1B7]",
+const styles: { [key in PAYOUT_STATUS]: string } = {
   completed: "bg-[#44CF9552]",
-  expired: "bg-[#F6C8C8]",
-  abandoned: "bg-[#D3E2FE]",
-  mismatched: "bg-[#FED7D7] text-[#E41D1D]",
+  failed: "bg-[#F6C8C8]",
+  initiated: "bg-[#FFD1B7]",
 };
 
-const TransactionModalSection = ({
-  accessor,
-  data,
-}: TransactionModalSectionProps) => {
+const PayoutModalSection = ({ accessor, data }: PayoutModalSectionProps) => {
   const currency = data.currency as "NGN" | "USD";
-  const status = getStatus(data.status);
 
   switch (accessor) {
     case "amount":
       return (
         <div className="flex  gap-x-5">
           <div className="">
-            {<TitleComponent>Order Amount</TitleComponent>}
+            {<TitleComponent>Amount</TitleComponent>}
             <HeadingComponent className="font-bold text-[#6F6F6F]">
               {currencyFormatter(data.amount, currency)}
             </HeadingComponent>
           </div>
-          {["mismatched", "completed"].includes(data.status) ? (
+          {data.status === "completed" ? (
             <div className="flex flex-col items-center gap-y-2">
               <span
-                className={`${
-                  data.status === "completed"
-                    ? "bg-[#44CF95] text-white"
-                    : "text-[#E41D1D] bg-[#FED7D7]"
-                } flex justify-center items-center   rounded-full w-[1.5rem] h-[1.5rem] `}
+                className={`flex justify-center items-center  bg-[#44CF95] text-white  rounded-full w-[1.5rem] h-[1.5rem] `}
               >
-                {data.status === "completed" ? (
-                  <FaCheck className="text-sm" />
-                ) : (
-                  <LiaTimesSolid className="text-sm" />
-                )}
+                <FaCheck className="text-sm" />
               </span>
               <span
-                className={`text-[0.625rem] px-2 py-1 text-center     rounded font-semibold ${
-                  data.status === "completed"
-                    ? "bg-[#44CF9552] text-[#3E4244]"
-                    : "bg-[#FED7D7] text-[#E41D1D]"
-                }`}
+                className={`text-[0.625rem] px-2 py-1 text-center bg-[#44CF9552] text-[#3E4244]     rounded font-semibold`}
               >
-                {data.status === "completed" ? "Matched" : "Mismatched"}
+                Matched
               </span>
             </div>
           ) : null}
@@ -77,24 +58,12 @@ const TransactionModalSection = ({
           {<TitleComponent>Amount Paid</TitleComponent>}
           <div className="">
             <div className="flex gap-x-3 items-center">
-              <HeadingComponent
-                className={`${status === "mismatched" ? "text-[#F00]" : ""}`}
-              >
+              <HeadingComponent>
                 {data.amount_paid && typeof data.amount_paid === "number"
                   ? currencyFormatter(data.amount_paid, currency)
                   : "N/A"}
               </HeadingComponent>
-              <button
-                className={`${styles[status]} text-[0.625rem] font-semibold text-[#3E4244] px-4 py-1 rounded-md w-fit capitalize`}
-              >
-                {status}
-              </button>
             </div>
-            {status === "mismatched" && (
-              <p className="text-[0.625rem] text-[#F00]">
-                {data.amount_paid < data.amount ? "Under-Paid" : "Over-Paid"}
-              </p>
-            )}
           </div>
         </div>
       );
@@ -115,7 +84,7 @@ const TransactionModalSection = ({
     case "order_no":
       return (
         <div className="">
-          {<TitleComponent>Order Number</TitleComponent>}
+          {<TitleComponent>Order Ref</TitleComponent>}
           <div className="flex flex-wrap gap-y-1">
             <HeadingComponent className="font-bold text-[#6F6F6F] truncate">
               {data.order_no}
@@ -198,43 +167,77 @@ const TransactionModalSection = ({
         </div>
       );
 
+    case "bank_name":
+      return (
+        <div className="">
+          {<TitleComponent>Bank Name</TitleComponent>}
+          <div className="flex flex-wrap gap-y-1">
+            <HeadingComponent className=" truncate uppercase">
+              {data.bank_name}
+            </HeadingComponent>
+          </div>
+        </div>
+      );
+
+    case "account_number":
+      return (
+        <div className="">
+          {<TitleComponent>Account Number</TitleComponent>}
+          <div className="flex flex-wrap gap-y-1">
+            <HeadingComponent className=" truncate uppercase">
+              {data.account_number}
+            </HeadingComponent>
+          </div>
+        </div>
+      );
+
+    case "account_name":
+      return (
+        <div className="">
+          {<TitleComponent>Account Name</TitleComponent>}
+          <div className="flex flex-wrap gap-y-1">
+            <HeadingComponent className=" truncate uppercase">
+              {data.account_name}
+            </HeadingComponent>
+          </div>
+        </div>
+      );
+
+    case "status":
+      return (
+        <div className="">
+          {<TitleComponent>TX Status</TitleComponent>}
+          <div className="flex flex-wrap gap-y-1">
+            <button
+              className={`${
+                styles[data.status as PAYOUT_STATUS]
+              } text-xs text-[#3E4244] px-4 py-1 rounded-md w-fit capitalize`}
+            >
+              {data.status}
+            </button>
+          </div>
+        </div>
+      );
+
     default:
       return null;
   }
 };
 
-export const TransactionModal = ({
-  closeModal,
-  ...rest
-}: TransactionModalProps) => {
+export const PayoutModal = ({ closeModal, ...rest }: PayoutModalProps) => {
   return (
     <Modal {...rest} closeModal={closeModal}>
       <div className="">
         <div className="grid  grid-cols-2 gap-y-8 gap-x-20 mb-7">
           {Object.keys(MOCK_DATA).map((item) => (
-            <TransactionModalSection
+            <PayoutModalSection
               accessor={item}
               key={item[0]}
               data={MOCK_DATA}
             />
           ))}
         </div>
-        {["mismatched", "expired"].includes(MOCK_DATA.status) && (
-          <div className="">
-            <p className="text-[#FF7A00] text-sm font-bold">
-              By claiming this transaction, only the amount that the user paid
-              will be settled to your wallet balance.
-            </p>
-          </div>
-        )}
-        <div className="mt-6 flex justify-between items-center">
-          <div className="">
-            {["mismatched", "expired"].includes(MOCK_DATA.status) && (
-              <button className="bg-[#0F3DB4] text-gray-50  rounded-xl py-2 h-11 font-bold text-sm px-10">
-                Claim
-              </button>
-            )}
-          </div>
+        <div className="mt-6 flex justify-end items-center">
           <button
             className="text-gray-50 bg-[#9EA0A6] rounded-xl py-2 h-11 font-bold text-sm px-10"
             onClick={closeModal}
@@ -252,12 +255,14 @@ const MOCK_DATA = {
   amount_paid: 1000,
   bank_ref: "REF2023110912345758393_1REF2023110912345758393_1",
   order_no: "PE33WS553jdjs83sy83hshPE33WS553jdjs83sy83hsh",
-  sender_name: "AVIS CHARLES AYODEJI",
+  sender_name: null,
   session_id: "10000202200003030033831000020220000303003383",
   tx_date: "2023-11-12  10:09PM",
   tx_duration: "12min 10 sec",
-  status: "mismatched",
-  action: "View",
   fee: 100.34,
   currency: "NGN",
+  bank_name: "Zenith",
+  account_number: "00665526109",
+  account_name: "Emmanuek K",
+  status: "initiated",
 };
