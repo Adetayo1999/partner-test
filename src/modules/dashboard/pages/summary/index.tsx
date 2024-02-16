@@ -109,12 +109,14 @@ const MOCK_DATA = [
     title: "Mismatched Txn",
     subText: "10,234 txns",
     metric: 43500,
+    link: PATHS.protected.transactions + "?type=mismatched",
   },
   {
     id: 4,
     title: "Total Expired",
     subText: "1,234 txns",
     metric: 1300,
+    link: PATHS.protected.transactions + "?type=expired",
   },
   {
     id: 5,
@@ -125,7 +127,6 @@ const MOCK_DATA = [
   {
     id: 6,
     title: "Total Users",
-    subText: "10,234 txns",
     metric: 43500,
   },
 ];
