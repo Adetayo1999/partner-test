@@ -1,3 +1,5 @@
+import { Tooltip } from "react-tooltip";
+import { BsQuestionCircleFill } from "react-icons/bs";
 import Pagination from "@common/components/pagination";
 import { Table } from "@common/components/table";
 import { currencyFormatter } from "@common/helpers/current-formatter";
@@ -76,6 +78,7 @@ export const MerchantTable = () => {
 
   return (
     <div className="">
+      <Tooltip id="merchant__table__tooltip" />
       <Table columns={COLUMN} data={tableData} />
       <div className="flex justify-end mt-5">
         <Pagination
@@ -107,11 +110,33 @@ const COLUMN = [
     accessor: "total_payout",
   },
   {
-    Header: "IMID",
+    Header: (
+      <p
+        data-tooltip-id="merchant__table__tooltip"
+        data-tooltip-content="Intrapay Merchant ID"
+        className="cursor-pointer flex gap-x-2 items-center"
+      >
+        <span>IMID</span>
+        <span>
+          <BsQuestionCircleFill />
+        </span>
+      </p>
+    ),
     accessor: "imid",
   },
   {
-    Header: "BMID",
+    Header: (
+      <p
+        data-tooltip-id="merchant__table__tooltip"
+        data-tooltip-content="Binance Merchant ID"
+        className="cursor-pointer flex gap-x-2 items-center"
+      >
+        <span>BMID</span>
+        <span>
+          <BsQuestionCircleFill />
+        </span>
+      </p>
+    ),
     accessor: "bmid",
   },
   {
