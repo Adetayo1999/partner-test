@@ -1,14 +1,27 @@
 import Pagination from "@common/components/pagination";
 import { Table } from "@common/components/table";
 import { currencyFormatter } from "@common/helpers/current-formatter";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { useClipboardCopy } from "@common/hooks/useClipboardCopy";
+import toast from "react-hot-toast";
+import { IoCopy } from "react-icons/io5";
 
 export const MerchantTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const { copyTextToClipboard } = useClipboardCopy();
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
+
+  const handleTextCopy = useCallback(
+    (value: string) => {
+      copyTextToClipboard(value)
+        .then(() => toast.success("Text copied"))
+        .catch(() => toast.error("Unable to copy..."));
+    },
+    [copyTextToClipboard]
+  );
 
   const tableData = useMemo(
     () =>
@@ -24,7 +37,28 @@ export const MerchantTable = () => {
             {currencyFormatter(item.total_payout, "NGN")}
           </p>
         ),
-        mid: <p>{item.mid}</p>,
+        imid: (
+          <div className="flex items-center gap-x-2">
+            <p className="max-w-[6rem] truncate">{item.mid}</p>
+            <button
+              className="  text-gray-400  text-sm"
+              onClick={() => handleTextCopy(item.mid)}
+            >
+              <IoCopy />
+            </button>
+          </div>
+        ),
+        bmid: (
+          <div className="flex items-center gap-x-2">
+            <p className="max-w-[6rem] truncate">{item.bmid}</p>
+            <button
+              className=" text-gray-400  text-sm"
+              onClick={() => handleTextCopy(item.bmid)}
+            >
+              <IoCopy />
+            </button>
+          </div>
+        ),
         status: (
           <button
             className={`${
@@ -37,7 +71,7 @@ export const MerchantTable = () => {
         date_joined: <p>{item.date_joined}</p>,
         full_name: <p>{item.full_name}</p>,
       })),
-    []
+    [handleTextCopy]
   );
 
   return (
@@ -73,8 +107,12 @@ const COLUMN = [
     accessor: "total_payout",
   },
   {
-    Header: "MID",
-    accessor: "mid",
+    Header: "IMID",
+    accessor: "imid",
+  },
+  {
+    Header: "BMID",
+    accessor: "bmid",
   },
   {
     Header: "Status",
@@ -95,6 +133,7 @@ const MOCK_DATA = [
     active: true,
     mid: "MID_0087h76v",
     date_joined: "12 Nov. 2023 12:34pm",
+    bmid: "0xf07373bb489AB0957E932515261fbCE433EF988c",
   },
   {
     full_name: "John Doe T",
@@ -104,6 +143,7 @@ const MOCK_DATA = [
     active: true,
     mid: "MID_0087h76v",
     date_joined: "12 Nov. 2023 12:34pm",
+    bmid: "0xf07373bb489AB0957E932515261fbCE433EF988c",
   },
   {
     full_name: "John Doe T",
@@ -113,6 +153,7 @@ const MOCK_DATA = [
     active: true,
     mid: "MID_0087h76v",
     date_joined: "12 Nov. 2023 12:34pm",
+    bmid: "0xf07373bb489AB0957E932515261fbCE433EF988c",
   },
   {
     full_name: "John Doe T",
@@ -122,6 +163,7 @@ const MOCK_DATA = [
     active: true,
     mid: "MID_0087h76v",
     date_joined: "12 Nov. 2023 12:34pm",
+    bmid: "0xf07373bb489AB0957E932515261fbCE433EF988c",
   },
   {
     full_name: "John Doe T",
@@ -131,6 +173,7 @@ const MOCK_DATA = [
     active: true,
     mid: "MID_0087h76v",
     date_joined: "12 Nov. 2023 12:34pm",
+    bmid: "0xf07373bb489AB0957E932515261fbCE433EF988c",
   },
   {
     full_name: "John Doe T",
@@ -140,6 +183,7 @@ const MOCK_DATA = [
     active: true,
     mid: "MID_0087h76v",
     date_joined: "12 Nov. 2023 12:34pm",
+    bmid: "0xf07373bb489AB0957E932515261fbCE433EF988c",
   },
   {
     full_name: "John Doe T",
@@ -149,6 +193,7 @@ const MOCK_DATA = [
     active: true,
     mid: "MID_0087h76v",
     date_joined: "12 Nov. 2023 12:34pm",
+    bmid: "0xf07373bb489AB0957E932515261fbCE433EF988c",
   },
   {
     full_name: "John Doe T",
@@ -158,5 +203,6 @@ const MOCK_DATA = [
     active: true,
     mid: "MID_0087h76v",
     date_joined: "12 Nov. 2023 12:34pm",
+    bmid: "0xf07373bb489AB0957E932515261fbCE433EF988c",
   },
 ];
