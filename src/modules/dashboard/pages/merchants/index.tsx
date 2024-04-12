@@ -1,31 +1,24 @@
 import { Input } from "@common/components/forms/input";
 import { CustomSelect } from "@common/components/forms/select";
+import { useAppSelector } from "@common/hooks/useAppSelector";
 import { MerchantTable } from "@modules/dashboard/components/merchants-table";
 import { GoSearch } from "react-icons/go";
 
-const OPTIONS = [
-  {
-    label: "All",
-    value: "all",
-  },
-  {
-    label: "Nigeria",
-    value: "nigeria",
-  },
-  {
-    label: "Ghana",
-    value: "ghana",
-  },
-];
-
 function Merchants() {
+  const countriesState = useAppSelector((state) => state.countries.data);
+
+  const formattedCountries = countriesState?.map((item) => ({
+    label: item.name,
+    value: item.currency,
+  }));
+
   return (
     <div className="">
       <div className="flex gap-x-5 items-center justify-between mb-5 ">
         <CustomSelect
           className="w-[8rem] h-[2.5rem] font-bold text-sm"
-          options={OPTIONS}
-          defaultValue={OPTIONS[0]}
+          options={formattedCountries || []}
+          // defaultValue={OPTIONS[0]}
         />
         <div className="">
           <form>

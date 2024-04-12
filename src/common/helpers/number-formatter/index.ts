@@ -1,35 +1,40 @@
+const defaultLocales: any = {
+  NGN: "en-NG",
+  GBP: "en-GB",
+  USD: "en-US",
+  GHS: "en-GH",
+  KHS: "en-KH",
+};
 
-
-
-
-
-
-
-const NumberFormatter = (amount: number) => {
-
+const NumberFormatter = (amount: number, currency?: string) => {
   let numberRange = { divider: 1, suffix: "" };
 
-    const ranges = [
-      { divider: 1e9, suffix: 'B' },
-      { divider: 1e6, suffix: 'M' },
-      { divider: 1e3, suffix: 'K' }
+  const ranges = [
+    { divider: 1e9, suffix: "B" },
+    { divider: 1e6, suffix: "M" },
+    // { divider: 1e3, suffix: "K" },
   ];
 
   for (const range of ranges) {
-      if (amount >= range.divider) {
-         numberRange = range
-         break;
-      }
+    if (amount >= range.divider) {
+      numberRange = range;
+      break;
+    }
   }
-  
-    const formattedAmount = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 1,
-      maximumFractionDigits: 2,
-    }).format(amount / numberRange.divider); // Dividing by 1000 to represent 'k'
-  
-    return formattedAmount + numberRange.suffix;
-  };
 
-  export default NumberFormatter;
+  if (!currency) return amount;
+
+  const formattedAmount = new Intl.NumberFormat(
+    defaultLocales[currency] || defaultLocales.USD,
+    {
+      style: "currency",
+      currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }
+  ).format(amount / numberRange.divider); // Dividing by 1000 to represent 'k'
+
+  return formattedAmount + numberRange.suffix;
+};
+
+export default NumberFormatter;

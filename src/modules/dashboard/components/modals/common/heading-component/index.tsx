@@ -8,6 +8,6 @@ export const HeadingComponent = ({
   className,
 }: HeadingComponentProps) => (
   <h3 className={`${className || ""} text-sm font-bold text-[#6F6F6F]  `}>
-    {children}
+    {children || "NIL"}
   </h3>
 );

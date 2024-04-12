@@ -5,6 +5,8 @@ import { HeadingComponent } from "../common/heading-component";
 import { CopyButton } from "../common/copy-button";
 import { TitleComponent } from "../common/title-component";
 import { PAYOUT_STATUS } from "@common/helpers/payout-status";
+import { useAppSelector } from "@common/hooks/useAppSelector";
+import { PayoutDetailsType } from "@common/redux/reducers/payout";
 
 interface PayoutModalProps {
   title: string;
@@ -13,7 +15,7 @@ interface PayoutModalProps {
 
 interface PayoutModalSectionProps {
   accessor: string;
-  data: typeof MOCK_DATA;
+  data: PayoutDetailsType;
 }
 
 const styles: { [key in PAYOUT_STATUS]: string } = {
@@ -23,7 +25,7 @@ const styles: { [key in PAYOUT_STATUS]: string } = {
 };
 
 const PayoutModalSection = ({ accessor, data }: PayoutModalSectionProps) => {
-  const currency = data.currency as "NGN" | "USD";
+  const currency = data.currency;
 
   switch (accessor) {
     case "amount":
@@ -35,7 +37,7 @@ const PayoutModalSection = ({ accessor, data }: PayoutModalSectionProps) => {
               {currencyFormatter(data.amount, currency)}
             </HeadingComponent>
           </div>
-          {data.status === "completed" ? (
+          {data.txn_status === "completed" ? (
             <div className="flex flex-col items-center gap-y-2">
               <span
                 className={`flex justify-center items-center  bg-[#44CF95] text-white  rounded-full w-[1.5rem] h-[1.5rem] `}
@@ -72,7 +74,7 @@ const PayoutModalSection = ({ accessor, data }: PayoutModalSectionProps) => {
       return (
         <div className="">
           {<TitleComponent>Bank Reference</TitleComponent>}
-          <div className="flex flex-wrap gap-y-1">
+          <div className="flex flex-wrap gap-x-2 gap-y-1">
             <HeadingComponent className="font-bold text-[#6F6F6F] truncate">
               {data.bank_ref || "N/A"}
             </HeadingComponent>
@@ -85,7 +87,7 @@ const PayoutModalSection = ({ accessor, data }: PayoutModalSectionProps) => {
       return (
         <div className="">
           {<TitleComponent>Order Ref</TitleComponent>}
-          <div className="flex flex-wrap gap-y-1">
+          <div className="flex flex-wrap gap-x-2 gap-y-1">
             <HeadingComponent className="font-bold text-[#6F6F6F] truncate">
               {data.order_no}
             </HeadingComponent>
@@ -110,7 +112,7 @@ const PayoutModalSection = ({ accessor, data }: PayoutModalSectionProps) => {
       return (
         <div className="">
           {<TitleComponent>Session ID</TitleComponent>}
-          <div className="flex flex-wrap gap-y-1">
+          <div className="flex flex-wrap gap-x-2 gap-y-1">
             <HeadingComponent className="font-bold text-[#6F6F6F] truncate">
               {data.session_id || "N/A"}
             </HeadingComponent>
@@ -119,25 +121,25 @@ const PayoutModalSection = ({ accessor, data }: PayoutModalSectionProps) => {
         </div>
       );
 
-    case "tx_date":
+    case "time_date":
       return (
         <div className="">
           {<TitleComponent>Date/Time</TitleComponent>}
           <div className="flex flex-wrap gap-y-1">
             <HeadingComponent className="font-bold text-[#6F6F6F] truncate">
-              {data.tx_date}
+              {data.time_date}
             </HeadingComponent>
           </div>
         </div>
       );
 
-    case "tx_duration":
+    case "transaction_duration":
       return (
         <div className="">
           {<TitleComponent>Transaction Duration</TitleComponent>}
           <div className="flex flex-wrap gap-y-1">
             <HeadingComponent className="font-bold text-[#6F6F6F] truncate">
-              {data.tx_duration}
+              {data.transaction_duration}
             </HeadingComponent>
           </div>
         </div>
@@ -210,10 +212,10 @@ const PayoutModalSection = ({ accessor, data }: PayoutModalSectionProps) => {
           <div className="flex flex-wrap gap-y-1">
             <button
               className={`${
-                styles[data.status as PAYOUT_STATUS]
+                styles[(data.txn_status as PAYOUT_STATUS) || "initiated"]
               } text-xs text-[#3E4244] px-4 py-1 rounded-md w-fit capitalize`}
             >
-              {data.status}
+              {(data.txn_status as PAYOUT_STATUS) || "initiated"}
             </button>
           </div>
         </div>
@@ -225,15 +227,17 @@ const PayoutModalSection = ({ accessor, data }: PayoutModalSectionProps) => {
 };
 
 export const PayoutModal = ({ closeModal, ...rest }: PayoutModalProps) => {
+  const payoutDetails = useAppSelector((state) => state.payout.payout_details!);
+
   return (
     <Modal {...rest} closeModal={closeModal}>
       <div className="">
         <div className="grid  grid-cols-2 gap-y-8 gap-x-20 mb-7">
-          {Object.keys(MOCK_DATA).map((item) => (
+          {Object.keys(payoutDetails).map((item) => (
             <PayoutModalSection
               accessor={item}
-              key={item[0]}
-              data={MOCK_DATA}
+              key={item}
+              data={payoutDetails}
             />
           ))}
         </div>
@@ -248,21 +252,4 @@ export const PayoutModal = ({ closeModal, ...rest }: PayoutModalProps) => {
       </div>
     </Modal>
   );
-};
-
-const MOCK_DATA = {
-  amount: 100000000.34,
-  amount_paid: 1000,
-  bank_ref: "REF2023110912345758393_1REF2023110912345758393_1",
-  order_no: "PE33WS553jdjs83sy83hshPE33WS553jdjs83sy83hsh",
-  sender_name: null,
-  session_id: "10000202200003030033831000020220000303003383",
-  tx_date: "2023-11-12  10:09PM",
-  tx_duration: "12min 10 sec",
-  fee: 100.34,
-  currency: "NGN",
-  bank_name: "Zenith",
-  account_number: "00665526109",
-  account_name: "Emmanuek K",
-  status: "initiated",
 };

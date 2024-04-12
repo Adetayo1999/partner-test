@@ -3,22 +3,9 @@ import { Button } from "@common/components/forms/button";
 import { Input } from "@common/components/forms/input";
 import { currencyFormatter } from "@common/helpers/current-formatter";
 import { useClipboardCopy } from "@common/hooks/useClipboardCopy";
+import { ResolutionResultType } from "@common/types";
 import toast from "react-hot-toast";
 import { FaCheck } from "react-icons/fa6";
-
-interface ResolutionResultType {
-  id: number;
-  order_amount: number;
-  amount_paid: number;
-  sender_name: string;
-  session_id: string;
-  currency: string;
-  bank_ref: string;
-  order_number: string;
-  date: string;
-  transaction_duration: string;
-  merchant_details: string;
-}
 
 interface ResolutionResultProps {
   data: ResolutionResultType[];
@@ -102,7 +89,7 @@ export const ResolutionResult = ({ data }: ResolutionResultProps) => {
     <div className="">
       <div className=" border-b border-[#C0C0C0] pb-3 mb-12">
         <h2 className="text-[#6F6F6F] font-bold text-lg px-4">
-          Search Result {data.length || null}
+          {data.length || null} Search Result
         </h2>
       </div>
       {isDataEmpty ? renderEmptyState() : null}
@@ -116,41 +103,24 @@ export const ResolutionResult = ({ data }: ResolutionResultProps) => {
             >
               <ResolutionRecord
                 title="Order Amount "
-                value={currencyFormatter(item.order_amount, "NGN")}
+                value={currencyFormatter(item.total_transaction, item.currency)}
                 hasMatched
               />
               <ResolutionRecord
                 title="Amount Paid"
-                value={currencyFormatter(item.amount_paid, "NGN")}
+                value={currencyFormatter(item.total_payout, item.currency)}
                 hasCompleted
               />
-              <ResolutionRecord
-                title="Sender’s name"
-                value={item.sender_name}
-              />
-              <ResolutionRecord
-                title="Session ID"
-                value={item.session_id}
-                hasCopy
-              />
+              <ResolutionRecord title="Sender’s name" value={item.full_name} />
+              <ResolutionRecord title="Session ID" value="NIL" hasCopy />
               <ResolutionRecord title="Currency" value={item.currency} />
-              <ResolutionRecord
-                title="Bank Reference"
-                value="REF2023110912345758393_1"
-              />
-              <ResolutionRecord
-                title="Order Number"
-                value={item.order_number}
-                hasCopy
-              />
-              <ResolutionRecord title="Date/time" value={item.date} />
-              <ResolutionRecord
-                title="Transaction Duration"
-                value={item.transaction_duration}
-              />
+              <ResolutionRecord title="Bank Reference" value="NIL" />
+              <ResolutionRecord title="Order Number" value="NIL" hasCopy />
+              <ResolutionRecord title="Date/time" value={item.date_joined} />
+              <ResolutionRecord title="Transaction Duration" value={"NIL"} />
               <ResolutionRecord
                 title="Merchant Details"
-                value={item.merchant_details}
+                value={"NIL"}
                 hasCopy
               />
             </div>

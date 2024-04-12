@@ -2,7 +2,11 @@ import fuspayLogo from "@common/assets/images/logo.png.png";
 import { Button } from "@common/components/forms/button";
 import { Container } from "@common/components/skeleton/container";
 import { Tabs } from "@common/components/tabs";
+import { useAppDispatch } from "@common/hooks/useAppDispatch";
+import { useAppSelector } from "@common/hooks/useAppSelector";
+import { getSupportedCountriesThunk } from "@common/redux/reducers/countries/thunk";
 import { PATHS } from "@common/routes/paths";
+import { useEffect } from "react";
 import { Outlet, Link } from "react-router-dom";
 
 const TABS = [
@@ -34,6 +38,13 @@ const TABS = [
 ];
 
 export const ProtectedLayout = () => {
+  const { data } = useAppSelector((state) => state.countries);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (!data) dispatch(getSupportedCountriesThunk());
+  }, [dispatch, data]);
+
   return (
     <Container>
       <div className="py-6 pb-[8rem]">

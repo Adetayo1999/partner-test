@@ -3,12 +3,17 @@ import { BsQuestionCircleFill } from "react-icons/bs";
 import Pagination from "@common/components/pagination";
 import { Table } from "@common/components/table";
 import { currencyFormatter } from "@common/helpers/current-formatter";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useClipboardCopy } from "@common/hooks/useClipboardCopy";
 import toast from "react-hot-toast";
 import { IoCopy } from "react-icons/io5";
+import { useAppSelector } from "@common/hooks/useAppSelector";
+import { useAppDispatch } from "@common/hooks/useAppDispatch";
+import { listPartnersMerchant } from "@common/redux/reducers/merchants/thunk";
 
 export const MerchantTable = () => {
+  const dispatch = useAppDispatch();
+  const { data, loading } = useAppSelector((state) => state.merchants);
   const [currentPage, setCurrentPage] = useState(1);
   const { copyTextToClipboard } = useClipboardCopy();
 
@@ -27,24 +32,26 @@ export const MerchantTable = () => {
 
   const tableData = useMemo(
     () =>
-      MOCK_DATA.map((item) => ({
+      (data || []).map((item) => ({
         country: <p className="text-[#E41D1D]">{item.country}</p>,
         total_transaction: (
           <p className="text-[#139E64]">
-            {currencyFormatter(item.total_transaction, "NGN")}
+            {currencyFormatter(item.total_transaction, item.currency)}
           </p>
         ),
         total_payout: (
           <p className="text-[#E41D1D]">
-            {currencyFormatter(item.total_payout, "NGN")}
+            {currencyFormatter(item.total_payout, item.currency)}
           </p>
         ),
         imid: (
           <div className="flex items-center gap-x-2">
-            <p className="max-w-[6rem] truncate">{item.mid}</p>
+            <p className="max-w-[6rem] truncate">
+              {item.intrapay_merchant_id_imid}
+            </p>
             <button
               className="  text-gray-400  text-sm"
-              onClick={() => handleTextCopy(item.mid)}
+              onClick={() => handleTextCopy(item.intrapay_merchant_id_imid)}
             >
               <IoCopy />
             </button>
@@ -52,10 +59,12 @@ export const MerchantTable = () => {
         ),
         bmid: (
           <div className="flex items-center gap-x-2">
-            <p className="max-w-[6rem] truncate">{item.bmid}</p>
+            <p className="max-w-[6rem] truncate">
+              {item.parnter_merchant_id_bmid}
+            </p>
             <button
               className=" text-gray-400  text-sm"
-              onClick={() => handleTextCopy(item.bmid)}
+              onClick={() => handleTextCopy(item.parnter_merchant_id_bmid)}
             >
               <IoCopy />
             </button>
@@ -64,22 +73,28 @@ export const MerchantTable = () => {
         status: (
           <button
             className={`${
-              item.active ? "text-[#3E4244] bg-[#44CF9552]" : ""
+              item.status.toLowerCase() === "active"
+                ? "text-[#3E4244] bg-[#44CF9552]"
+                : ""
             } text-xs px-4 py-1 rounded-md `}
           >
-            {item.active ? "Active" : "Inactive"}
+            {item.status}
           </button>
         ),
         date_joined: <p>{item.date_joined}</p>,
         full_name: <p>{item.full_name}</p>,
       })),
-    [handleTextCopy]
+    [handleTextCopy, data]
   );
+
+  useEffect(() => {
+    dispatch(listPartnersMerchant());
+  }, [dispatch]);
 
   return (
     <div className="">
       <Tooltip id="merchant__table__tooltip" />
-      <Table columns={COLUMN} data={tableData} />
+      <Table columns={COLUMN} data={tableData} loading={loading} />
       <div className="flex justify-end mt-5">
         <Pagination
           currentPage={currentPage}
@@ -146,88 +161,5 @@ const COLUMN = [
   {
     Header: "Date Joined",
     accessor: "date_joined",
-  },
-];
-
-const MOCK_DATA = [
-  {
-    full_name: "John Doe T",
-    country: "Nigeria",
-    total_transaction: 400000,
-    total_payout: 65000000,
-    active: true,
-    mid: "MID_0087h76v",
-    date_joined: "12 Nov. 2023 12:34pm",
-    bmid: "0xf07373bb489AB0957E932515261fbCE433EF988c",
-  },
-  {
-    full_name: "John Doe T",
-    country: "Nigeria",
-    total_transaction: 400000,
-    total_payout: 65000000,
-    active: true,
-    mid: "MID_0087h76v",
-    date_joined: "12 Nov. 2023 12:34pm",
-    bmid: "0xf07373bb489AB0957E932515261fbCE433EF988c",
-  },
-  {
-    full_name: "John Doe T",
-    country: "Nigeria",
-    total_transaction: 400000,
-    total_payout: 65000000,
-    active: true,
-    mid: "MID_0087h76v",
-    date_joined: "12 Nov. 2023 12:34pm",
-    bmid: "0xf07373bb489AB0957E932515261fbCE433EF988c",
-  },
-  {
-    full_name: "John Doe T",
-    country: "Nigeria",
-    total_transaction: 400000,
-    total_payout: 65000000,
-    active: true,
-    mid: "MID_0087h76v",
-    date_joined: "12 Nov. 2023 12:34pm",
-    bmid: "0xf07373bb489AB0957E932515261fbCE433EF988c",
-  },
-  {
-    full_name: "John Doe T",
-    country: "Nigeria",
-    total_transaction: 400000,
-    total_payout: 65000000,
-    active: true,
-    mid: "MID_0087h76v",
-    date_joined: "12 Nov. 2023 12:34pm",
-    bmid: "0xf07373bb489AB0957E932515261fbCE433EF988c",
-  },
-  {
-    full_name: "John Doe T",
-    country: "Nigeria",
-    total_transaction: 400000,
-    total_payout: 65000000,
-    active: true,
-    mid: "MID_0087h76v",
-    date_joined: "12 Nov. 2023 12:34pm",
-    bmid: "0xf07373bb489AB0957E932515261fbCE433EF988c",
-  },
-  {
-    full_name: "John Doe T",
-    country: "Nigeria",
-    total_transaction: 400000,
-    total_payout: 65000000,
-    active: true,
-    mid: "MID_0087h76v",
-    date_joined: "12 Nov. 2023 12:34pm",
-    bmid: "0xf07373bb489AB0957E932515261fbCE433EF988c",
-  },
-  {
-    full_name: "John Doe T",
-    country: "Nigeria",
-    total_transaction: 400000,
-    total_payout: 65000000,
-    active: true,
-    mid: "MID_0087h76v",
-    date_joined: "12 Nov. 2023 12:34pm",
-    bmid: "0xf07373bb489AB0957E932515261fbCE433EF988c",
   },
 ];

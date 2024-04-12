@@ -17,7 +17,10 @@ export function Table({ columns, data, loading }: TableProps) {
 
   if (loading && !data.length) {
     return (
-      <div className="min-h-[20rem] max-h-full flex justify-center items-center "></div>
+      <div className="min-h-[20rem] max-h-full flex flex-col gap-y-2 justify-center items-center ">
+        <MoonLoader color="#0F3DB4" size={50} />
+        <p className="animate-pulse mt-2 text-sm text-gray-800">Loading...</p>
+      </div>
     );
   }
 

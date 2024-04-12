@@ -1,21 +1,30 @@
-import Select from "react-select";
+import Select, { ActionMeta, SingleValue } from "react-select";
 
-interface CustomSelectProps {
-  options: { value: string; label: string }[];
+interface CustomSelectProps<P> {
+  options: { value: P; label: string }[];
+  value?: { value: P; label: string };
   className?: string;
-  defaultValue?: { value: string; label: string };
+  defaultValue?: { value: P; label: string };
+  onChange?: (
+    newValue: SingleValue<{ value: P; label: string }>,
+    actionMeta: ActionMeta<{ value: P; label: string }>
+  ) => void;
 }
 
-export const CustomSelect = ({
+export function CustomSelect<P = string>({
   options,
   className,
   defaultValue,
-}: CustomSelectProps) => {
+  onChange,
+  value,
+}: CustomSelectProps<P>) {
   return (
     <Select
       options={options}
       className={className}
       defaultValue={defaultValue}
+      value={value}
+      onChange={onChange}
     />
   );
-};
+}

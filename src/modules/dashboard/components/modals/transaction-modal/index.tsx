@@ -6,6 +6,8 @@ import { LiaTimesSolid } from "react-icons/lia";
 import { HeadingComponent } from "../common/heading-component";
 import { CopyButton } from "../common/copy-button";
 import { TitleComponent } from "../common/title-component";
+import { useAppSelector } from "@common/hooks/useAppSelector";
+import { TransactionDetialsType } from "@common/redux/reducers/transactions";
 
 interface TransactionModalProps {
   title: string;
@@ -14,7 +16,7 @@ interface TransactionModalProps {
 
 interface TransactionModalSectionProps {
   accessor: string;
-  data: typeof MOCK_DATA;
+  data: TransactionDetialsType;
 }
 
 const styles: { [key in TRANSACTION_STATUS]: string } = {
@@ -30,7 +32,7 @@ const TransactionModalSection = ({
   data,
 }: TransactionModalSectionProps) => {
   const currency = data.currency as "NGN" | "USD";
-  const status = getStatus(data.status);
+  const status = getStatus(data.txn_status);
 
   switch (accessor) {
     case "amount":
@@ -42,16 +44,16 @@ const TransactionModalSection = ({
               {currencyFormatter(data.amount, currency)}
             </HeadingComponent>
           </div>
-          {["mismatched", "completed"].includes(data.status) ? (
+          {["mismatched", "completed"].includes(data.txn_status) ? (
             <div className="flex flex-col items-center gap-y-2">
               <span
                 className={`${
-                  data.status === "completed"
+                  data.txn_status === "completed"
                     ? "bg-[#44CF95] text-white"
                     : "text-[#E41D1D] bg-[#FED7D7]"
                 } flex justify-center items-center   rounded-full w-[1.5rem] h-[1.5rem] `}
               >
-                {data.status === "completed" ? (
+                {data.txn_status === "completed" ? (
                   <FaCheck className="text-sm" />
                 ) : (
                   <LiaTimesSolid className="text-sm" />
@@ -59,12 +61,12 @@ const TransactionModalSection = ({
               </span>
               <span
                 className={`text-[0.625rem] px-2 py-1 text-center     rounded font-semibold ${
-                  data.status === "completed"
+                  data.txn_status === "completed"
                     ? "bg-[#44CF9552] text-[#3E4244]"
                     : "bg-[#FED7D7] text-[#E41D1D]"
                 }`}
               >
-                {data.status === "completed" ? "Matched" : "Mismatched"}
+                {data.txn_status === "completed" ? "Matched" : "Mismatched"}
               </span>
             </div>
           ) : null}
@@ -103,7 +105,7 @@ const TransactionModalSection = ({
       return (
         <div className="">
           {<TitleComponent>Bank Reference</TitleComponent>}
-          <div className="flex flex-wrap gap-y-1">
+          <div className="flex flex-wrap  gap-x-2  gap-y-1">
             <HeadingComponent className="font-bold text-[#6F6F6F] truncate">
               {data.bank_ref || "N/A"}
             </HeadingComponent>
@@ -116,7 +118,7 @@ const TransactionModalSection = ({
       return (
         <div className="">
           {<TitleComponent>Order Number</TitleComponent>}
-          <div className="flex flex-wrap gap-y-1">
+          <div className="flex flex-wrap gap-x-2 gap-y-1">
             <HeadingComponent className="font-bold text-[#6F6F6F] truncate">
               {data.order_no}
             </HeadingComponent>
@@ -141,7 +143,7 @@ const TransactionModalSection = ({
       return (
         <div className="">
           {<TitleComponent>Session ID</TitleComponent>}
-          <div className="flex flex-wrap gap-y-1">
+          <div className="flex flex-wrap gap-x-2 gap-y-1">
             <HeadingComponent className="font-bold text-[#6F6F6F] truncate">
               {data.session_id || "N/A"}
             </HeadingComponent>
@@ -150,25 +152,25 @@ const TransactionModalSection = ({
         </div>
       );
 
-    case "tx_date":
+    case "time_date":
       return (
         <div className="">
           {<TitleComponent>Date/Time</TitleComponent>}
           <div className="flex flex-wrap gap-y-1">
             <HeadingComponent className="font-bold text-[#6F6F6F] truncate">
-              {data.tx_date}
+              {data.time_date}
             </HeadingComponent>
           </div>
         </div>
       );
 
-    case "tx_duration":
+    case "transaction_duration":
       return (
         <div className="">
           {<TitleComponent>Transaction Duration</TitleComponent>}
           <div className="flex flex-wrap gap-y-1">
             <HeadingComponent className="font-bold text-[#6F6F6F] truncate">
-              {data.tx_duration}
+              {data.transaction_duration}
             </HeadingComponent>
           </div>
         </div>
@@ -207,19 +209,23 @@ export const TransactionModal = ({
   closeModal,
   ...rest
 }: TransactionModalProps) => {
+  const transaction_details = useAppSelector(
+    (state) => state.transactions.transaction_details!
+  );
+
   return (
     <Modal {...rest} closeModal={closeModal}>
       <div className="">
         <div className="grid  grid-cols-2 gap-y-8 gap-x-20 mb-7">
-          {Object.keys(MOCK_DATA).map((item) => (
+          {Object.keys(transaction_details).map((item) => (
             <TransactionModalSection
               accessor={item}
               key={item[0]}
-              data={MOCK_DATA}
+              data={transaction_details}
             />
           ))}
         </div>
-        {["mismatched", "expired"].includes(MOCK_DATA.status) && (
+        {["mismatched", "expired"].includes(transaction_details.txn_status) && (
           <div className="">
             <p className="text-[#FF7A00] text-sm font-bold">
               By claiming this transaction, only the amount that the user paid
@@ -229,7 +235,9 @@ export const TransactionModal = ({
         )}
         <div className="mt-6 flex justify-between items-center">
           <div className="">
-            {["mismatched", "expired"].includes(MOCK_DATA.status) && (
+            {["mismatched", "expired"].includes(
+              transaction_details.txn_status
+            ) && (
               <button className="bg-[#0F3DB4] text-gray-50  rounded-xl py-2 h-11 font-bold text-sm px-10">
                 Claim
               </button>
@@ -245,19 +253,4 @@ export const TransactionModal = ({
       </div>
     </Modal>
   );
-};
-
-const MOCK_DATA = {
-  amount: 100000000.34,
-  amount_paid: 1000,
-  bank_ref: "REF2023110912345758393_1REF2023110912345758393_1",
-  order_no: "PE33WS553jdjs83sy83hshPE33WS553jdjs83sy83hsh",
-  sender_name: "AVIS CHARLES AYODEJI",
-  session_id: "10000202200003030033831000020220000303003383",
-  tx_date: "2023-11-12  10:09PM",
-  tx_duration: "12min 10 sec",
-  status: "mismatched",
-  action: "View",
-  fee: 100.34,
-  currency: "NGN",
 };

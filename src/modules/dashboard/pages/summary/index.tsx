@@ -1,7 +1,6 @@
 import { FaCircleUser } from "react-icons/fa6";
-import { DashboardCard } from "@common/components/dashboard-card";
 import { CustomSelect } from "@common/components/forms/select";
-import { PATHS } from "@common/routes/paths";
+import { DashboardMetrics } from "@common/components/dashboard-metrics";
 
 function Summary() {
   return (
@@ -23,11 +22,7 @@ function Summary() {
             />
           </div>
         </div>
-        <div className="md:grid-cols-5 gap-4 grid">
-          {MOCK_DATA.map((item) => (
-            <DashboardCard key={item.id} {...item} />
-          ))}
-        </div>
+        <DashboardMetrics />
       </div>
       <div className="">
         <div className="mb-6">
@@ -76,7 +71,7 @@ function Summary() {
                 <path
                   d="M18.6929 9.53003C20.4088 9.53003 21.7986 11.2067 21.7986 13.2767C21.7986 15.3467 20.4088 16.9576 18.6929 16.9576C19.7911 16.9576 20.8444 17.4839 21.621 18.4208C22.3976 19.3576 22.8339 20.6282 22.8339 21.9531H21.0592"
                   stroke="#6C6C6C"
-                  stroke-width="1.48387"
+                  strokeWidth="1.48387"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
@@ -89,46 +84,5 @@ function Summary() {
     </div>
   );
 }
-
-const MOCK_DATA = [
-  {
-    id: 1,
-    title: "Total Order",
-    subText: "10,234 txns",
-    metric: 4350000000,
-  },
-  {
-    id: 2,
-    title: "Pending Txn",
-    subText: "1,234 txns",
-    metric: 61435.67,
-    link: PATHS.protected.transactions + "?type=pending",
-  },
-  {
-    id: 3,
-    title: "Mismatched Txn",
-    subText: "10,234 txns",
-    metric: 43500,
-    link: PATHS.protected.transactions + "?type=mismatched",
-  },
-  {
-    id: 4,
-    title: "Total Expired",
-    subText: "1,234 txns",
-    metric: 1300,
-    link: PATHS.protected.transactions + "?type=expired",
-  },
-  {
-    id: 5,
-    title: "Total Abandoned",
-    subText: "10,234 txns",
-    metric: 43500,
-  },
-  {
-    id: 6,
-    title: "Total Users",
-    metric: 43500,
-  },
-];
 
 export default Summary;

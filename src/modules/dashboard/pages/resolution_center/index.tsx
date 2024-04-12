@@ -1,25 +1,63 @@
 import { Button } from "@common/components/forms/button";
 import { Dropdown } from "@common/components/forms/dropdown";
 import { Input } from "@common/components/forms/input";
+import { useAppSelector } from "@common/hooks/useAppSelector";
+import { requests } from "@common/services";
+import {
+  PartnersSearchRecordsRequestQuery,
+  PartnersSearchRecordsRequestType,
+  ResolutionResultType,
+} from "@common/types";
 import { ResolutionResult } from "@modules/dashboard/components/resolution-result";
+import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
 interface ResolutionCenterFormType {
-  type: string;
-  query: string;
+  type: PartnersSearchRecordsRequestType;
+  query: PartnersSearchRecordsRequestQuery;
   data: string;
   country: string;
 }
 
 function ResolutionCenter() {
+  const countriesState = useAppSelector((state) => state.countries.data);
+  const [loading, setLoading] = useState(false);
+  const [resolutionResult, setResolutionResult] = useState<
+    ResolutionResultType[]
+  >([]);
+
+  const formattedCountries = countriesState?.map((item) => ({
+    label: item.name,
+    value: item.name,
+  }));
+
   const {
     register,
     formState: { errors },
     handleSubmit,
+    reset,
   } = useForm<ResolutionCenterFormType>();
 
-  const handleQuerySearch: SubmitHandler<ResolutionCenterFormType> = (data) => {
-    console.log(data);
+  const handleQuerySearch: SubmitHandler<ResolutionCenterFormType> = async (
+    data
+  ) => {
+    try {
+      setLoading(true);
+      const { data: responseData } = await requests.searchRecords(
+        { text: data.data },
+        data.type,
+        data.query
+      );
+      setResolutionResult(responseData.data);
+      reset();
+    } catch (err: any) {
+      toast.error(
+        err?.response?.data?.message || err?.message || "Something went wrong"
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -90,106 +128,27 @@ function ResolutionCenter() {
             </div>
             <div className="flex-[0.2]">
               <Dropdown
-                options={[
-                  {
-                    label: "Nigeria",
-                    value: "nigeria",
-                  },
-                  {
-                    label: "Ghana",
-                    value: "ghana",
-                  },
-                  {
-                    label: "Kenya",
-                    value: "kenya",
-                  },
-                  {
-                    label: "Saudi Arabia",
-                    value: "saudi arabia",
-                  },
-                ]}
+                options={
+                  formattedCountries
+                    ? [{ label: "Country", value: "" }, ...formattedCountries]
+                    : []
+                }
                 {...register("country", { required: true })}
                 error={errors.country}
               />
             </div>
             <div className="flex flex-col gap-y-1  ">
-              <Button>Search</Button>
+              <Button loading={loading} className="min-w-[6rem]">
+                Search
+              </Button>
               <div className="h-4" />
             </div>
           </div>
         </form>
       </div>
-      <ResolutionResult data={MOCK_DATA} />
+      <ResolutionResult data={resolutionResult} />
     </div>
   );
 }
-
-const MOCK_DATA = [
-  {
-    id: 1,
-    order_amount: 100000,
-    amount_paid: 1000,
-    sender_name: "AVIS CHARLES AYODEJI",
-    session_id: "1000020220000303003383....",
-    currency: "NGN",
-    bank_ref: "REF2023110912345758393_1",
-    order_number: "PE33WS553jdjs83sy83hsh....",
-    date: "2023-11-12   10:09PM",
-    transaction_duration: "12min 10 sec",
-    merchant_details: "Charles Avis A",
-  },
-  {
-    id: 1,
-    order_amount: 100000,
-    amount_paid: 1000,
-    sender_name: "AVIS CHARLES AYODEJI",
-    session_id: "1000020220000303003383....",
-    currency: "NGN",
-    bank_ref: "REF2023110912345758393_1",
-    order_number: "PE33WS553jdjs83sy83hsh....",
-    date: "2023-11-12   10:09PM",
-    transaction_duration: "12min 10 sec",
-    merchant_details: "Charles Avis A",
-  },
-  {
-    id: 2,
-    order_amount: 100000,
-    amount_paid: 1000,
-    sender_name: "AVIS CHARLES AYODEJI",
-    session_id: "1000020220000303003383....",
-    currency: "NGN",
-    bank_ref: "REF2023110912345758393_1",
-    order_number: "PE33WS553jdjs83sy83hsh....",
-    date: "2023-11-12   10:09PM",
-    transaction_duration: "12min 10 sec",
-    merchant_details: "Charles Avis A",
-  },
-  {
-    id: 3,
-    order_amount: 100000,
-    amount_paid: 1000,
-    sender_name: "AVIS CHARLES AYODEJI",
-    session_id: "1000020220000303003383....",
-    currency: "NGN",
-    bank_ref: "REF2023110912345758393_1",
-    order_number: "PE33WS553jdjs83sy83hsh....",
-    date: "2023-11-12   10:09PM",
-    transaction_duration: "12min 10 sec",
-    merchant_details: "Charles Avis A",
-  },
-  {
-    id: 4,
-    order_amount: 100000,
-    amount_paid: 1000,
-    sender_name: "AVIS CHARLES AYODEJI",
-    session_id: "1000020220000303003383....",
-    currency: "NGN",
-    bank_ref: "REF2023110912345758393_1",
-    order_number: "PE33WS553jdjs83sy83hsh....",
-    date: "2023-11-12   10:09PM",
-    transaction_duration: "12min 10 sec",
-    merchant_details: "Charles Avis A",
-  },
-];
 
 export default ResolutionCenter;
