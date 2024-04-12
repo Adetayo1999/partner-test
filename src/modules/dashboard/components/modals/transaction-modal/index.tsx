@@ -220,7 +220,7 @@ export const TransactionModal = ({
           {Object.keys(transaction_details).map((item) => (
             <TransactionModalSection
               accessor={item}
-              key={item[0]}
+              key={item}
               data={transaction_details}
             />
           ))}
